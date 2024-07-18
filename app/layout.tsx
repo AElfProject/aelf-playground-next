@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { MenubarComponent } from "@/components/menu";
 import { Shell } from "@/components/shell";
+import {ChatBot} from "@/components/deepchat";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,7 +32,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <MenubarComponent />
-          <Shell left={left} top={top} bottom={bottom} />
+          <Shell left={left} top={<ChatBot
+            />} bottom={bottom} 
+          />
         </ThemeProvider>
       </body>
     </html>
