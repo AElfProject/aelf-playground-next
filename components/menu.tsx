@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/menubar";
 import { ModeToggle } from "./mode-toggle";
 import Modal from "./modal";
+import { ChatBot } from "./deepchat";
 
 export function MenubarComponent() {
   return (
@@ -21,7 +22,7 @@ export function MenubarComponent() {
           <Modal
             trigger={<span>Chat</span>}
             title="Chat"
-            body={<>Put your component here.</>}
+            body={<ChatBot />}
           />
         </MenubarTrigger>
       </MenubarMenu>
