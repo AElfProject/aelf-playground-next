@@ -3,7 +3,11 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { MenubarComponent } from "@/components/menu";
-import { Shell } from "@/components/shell";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,15 +17,11 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  bottom,
   left,
-  top,
-  bottomLeft,
+  right,
 }: Readonly<{
-  bottom: React.ReactNode;
   left: React.ReactNode;
-  top: React.ReactNode;
-  bottomLeft: React.ReactNode;
+  right: React.ReactNode;
 }>) {
   return (
     <html lang="en">
@@ -33,8 +33,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <MenubarComponent />
-          <Shell left={left} top={top} bottom={bottom} bottomLeft={bottomLeft}
-          />
+          <div className="h-[calc(100vh-40px)]">
+            <ResizablePanelGroup direction="horizontal" className="border">
+              <ResizablePanel defaultSize={25}>{left}</ResizablePanel>
+              <ResizableHandle />
+              <ResizablePanel defaultSize={75}>{right}</ResizablePanel>
+            </ResizablePanelGroup>
+          </div>
         </ThemeProvider>
       </body>
     </html>
