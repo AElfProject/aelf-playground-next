@@ -3,8 +3,15 @@
 import React from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { csharp } from "@replit/codemirror-lang-csharp";
+import { githubLight, githubDark } from "@uiw/codemirror-theme-github";
+import { useTheme } from "next-themes";
 
 export default function Editor() {
+  const { theme, systemTheme } = useTheme();
+
+  const currentTheme = theme !== "system" ? theme : systemTheme;
+  const editorTheme = currentTheme === "light" ? githubLight : githubDark;
+
   const [value, setValue] = React.useState(`using System;
 namespace Test
 {
@@ -24,6 +31,7 @@ namespace Test
     <CodeMirror
       value={value}
       height="1000px"
+      theme={editorTheme}
       extensions={[csharp()]}
       onChange={onChange}
     />
