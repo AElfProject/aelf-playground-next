@@ -1,0 +1,21 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.development
+    command: npm run dev
+    develop:
+      watch:
+        - action: sync
+          path: ./
+          target: /app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+    ports:
+      - 3000:3000
+    environment:
+      - BUILD_SERVER_BASE_URL=http://backend:7020
+  backend:
+    image: aelfactory/playground-service

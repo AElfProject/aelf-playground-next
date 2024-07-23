@@ -10,8 +10,6 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
 npm install
 npm run dev
@@ -20,6 +18,8 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+If the page stops auto-updating, refresh the browser to fix it.
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
@@ -36,5 +36,4 @@ If you encounter a bug or have a feature request, please use the [Issue Tracker]
 
 ## License
 
-Distributed under the Apache License. See [License](LICENSE) for more information.
 Distributed under the MIT License. See [License](LICENSE) for more information.

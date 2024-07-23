@@ -6,24 +6,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ReactNode } from "react";
+import { PropsWithChildren, ReactNode } from "react";
 
 export default function Modal({
   trigger,
   title,
-  body,
-}: {
+  children,
+}: PropsWithChildren<{
   trigger: ReactNode;
   title: ReactNode;
-  body: ReactNode;
-}) {
+}>) {
   return (
     <Dialog>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{body}</DialogDescription>
+          <DialogDescription>{children}</DialogDescription>
         </DialogHeader>
       </DialogContent>
     </Dialog>
