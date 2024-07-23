@@ -40,7 +40,7 @@ export const ChatBot = () => {
     <div style={{ display: 'flex', width: '100%', height: '100%' }}>
       <DeepChat
         style={{ borderRadius: '10px', width: '100%', height: '100%' }}
-        introMessage={{ text: 'Send a chat message through an example server to OpenAI.' }}
+        introMessage={{ text: 'Send a chat message to create a smart contract.' }}
         connect={{
           handler: sendMessage,
         }}

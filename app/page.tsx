@@ -1,3 +1,4 @@
+import { ChatBot } from "@/components/deepchat";
 import {
   GlobeIcon,
   TargetIcon,
@@ -74,13 +75,7 @@ export default function Home() {
         <h3 className="text-xl font-bold">... or generate from a prompt:</h3>
         <div className="grid w-full max-w-3xl grid-cols-1 gap-6 md:grid-cols-2">
           <div className="rounded-lg border bg-background p-6 shadow-sm">
-            <img
-              src="/placeholder.svg"
-              width={400}
-              height={225}
-              alt="Deepchat here"
-              className="aspect-video object-cover rounded-md"
-            />
+            <ChatBot />
           </div>
           <div className="space-y-4">
             <h4 className="text-2xl font-bold">DeepChat AI</h4>
