@@ -13,12 +13,10 @@ export function Shell({
   left,
   top,
   bottom,
-  bottomLeft,
 }: {
   left: ReactNode;
   top: ReactNode;
   bottom: ReactNode;
-  bottomLeft: ReactNode;
 }) {
   return (
     <div className="h-[calc(100vh-40px)]">
