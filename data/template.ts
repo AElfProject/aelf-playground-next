@@ -1,5 +1,5 @@
 import { getBuildServerBaseUrl } from "@/lib/env";
-import { unzipSync } from "fflate";
+import { getWorkspaceData } from "./generated-workspace";
 
 export async function getTemplateData(id: string, name: string = "test") {
   const res = await fetch(
@@ -8,9 +8,7 @@ export async function getTemplateData(id: string, name: string = "test") {
 
   const data = await res.text();
 
-  const zipData = Buffer.from(data, "base64");
-
-  return unzipSync(zipData);
+  return getWorkspaceData(data);
 }
 
 export async function getTemplateNames() {

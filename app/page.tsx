@@ -73,15 +73,7 @@ export default function Home() {
           </div>
         </div>
         <h3 className="text-xl font-bold">... or generate from a prompt:</h3>
-        <div className="grid w-full max-w-3xl grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="rounded-lg border bg-background p-6 shadow-sm">
-            <ChatBot />
-          </div>
-          <div className="space-y-4">
-            <h4 className="text-2xl font-bold">DeepChat AI</h4>
-            <p className="text-muted-foreground">Some description.</p>
-          </div>
-        </div>
+        <ChatBot mode="create" />
       </div>
     </section>
   );
