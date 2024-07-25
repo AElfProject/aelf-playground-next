@@ -1,5 +1,6 @@
 "use client";
 
+import { ChatBot } from "@/components/deepchat";
 import TopBottom from "@/components/top-bottom";
 import {
   ResizablePanelGroup,
@@ -15,7 +16,7 @@ export default function Page() {
   return (
     <ResizablePanelGroup direction="horizontal" className="border">
       <ResizablePanel defaultSize={25}>
-        <TopBottom top={<FileExplorer />} bottom={<p>Chat component</p>} />
+        <TopBottom top={<FileExplorer />} bottom={<ChatBot mode={""} />} />
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel defaultSize={75}>

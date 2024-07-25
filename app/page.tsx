@@ -1,4 +1,4 @@
-import { ChatBot } from "@/components/deepchat";
+import CreateWorkspaceChat from "@/components/create-workspace-chat";
 import {
   GlobeIcon,
   TargetIcon,
@@ -83,7 +83,7 @@ export default function Home() {
         </Link>
 
         <h3 className="text-xl font-bold">... or generate from a prompt:</h3>
-        <ChatBot mode="create" />
+        <CreateWorkspaceChat />
       </div>
     </section>
   );
