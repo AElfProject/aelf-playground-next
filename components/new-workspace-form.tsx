@@ -53,7 +53,11 @@ export function WorkspaceForm({
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     form.clearErrors();
     try {
-      await db.workspaces.add({ name: data.name, template: data.template });
+      await db.workspaces.add({
+        name: data.name,
+        template: data.template,
+        dll: "",
+      });
       const res = await fetch(
         `/api/get-template-data?id=${data.template}&name=${data.name}`
       );

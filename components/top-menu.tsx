@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetClose,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { MenuIcon, MoonIcon, SunIcon, SunMoonIcon } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -10,6 +15,12 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 export default function TopMenu() {
   const { theme, setTheme } = useTheme();
 
+  const links = [
+    { href: "/", children: "Home" },
+    { href: "/workspaces", children: "Workspaces" },
+    { href: "https://github.com/AElfProject", children: "GitHub" },
+  ];
+
   return (
     <header className="sticky top-0 z-50 w-full bg-background shadow-sm transition-colors dark:bg-background-dark">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
@@ -17,32 +28,13 @@ export default function TopMenu() {
           AElf Playground
         </Link>
         <nav className="hidden space-x-4 md:flex">
-          <Link
-            href="/"
-            className="text-sm font-medium transition-colors hover:text-primary dark:hover:text-primary-dark"
-          >
-            Home
-          </Link>
-          <Link
-            href="/workspace-open"
-            className="text-sm font-medium transition-colors hover:text-primary dark:hover:text-primary-dark"
-          >
-            Workspaces
-          </Link>
-          <Link
-            href="#"
-            className="text-sm font-medium transition-colors hover:text-primary dark:hover:text-primary-dark"
-            prefetch={false}
-          >
-            Settings
-          </Link>
-          <Link
-            href="#"
-            className="text-sm font-medium transition-colors hover:text-primary dark:hover:text-primary-dark"
-            prefetch={false}
-          >
-            Contact
-          </Link>
+          {links.map((link) => (
+            <Link
+              key={link.children}
+              className="text-sm font-medium transition-colors hover:text-primary dark:hover:text-primary-dark"
+              {...link}
+            />
+          ))}
         </nav>
         <div className="flex items-center space-x-4">
           <ToggleGroup type="single" value={theme} onValueChange={setTheme}>
@@ -68,34 +60,14 @@ export default function TopMenu() {
               className="w-full max-w-xs bg-background dark:bg-background-dark"
             >
               <div className="flex flex-col gap-4 p-4">
-                <Link
-                  href="#"
-                  className="text-sm font-medium transition-colors hover:text-primary dark:hover:text-primary-dark"
-                  prefetch={false}
-                >
-                  Home
-                </Link>
-                <Link
-                  href="#"
-                  className="text-sm font-medium transition-colors hover:text-primary dark:hover:text-primary-dark"
-                  prefetch={false}
-                >
-                  About
-                </Link>
-                <Link
-                  href="#"
-                  className="text-sm font-medium transition-colors hover:text-primary dark:hover:text-primary-dark"
-                  prefetch={false}
-                >
-                  Services
-                </Link>
-                <Link
-                  href="#"
-                  className="text-sm font-medium transition-colors hover:text-primary dark:hover:text-primary-dark"
-                  prefetch={false}
-                >
-                  Contact
-                </Link>
+                {links.map((link) => (
+                  <SheetClose key={link.children} asChild>
+                    <Link
+                      className="text-sm font-medium transition-colors hover:text-primary dark:hover:text-primary-dark"
+                      {...link}
+                    />
+                  </SheetClose>
+                ))}
               </div>
             </SheetContent>
           </Sheet>

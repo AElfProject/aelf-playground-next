@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PropsWithChildren } from "react";
 import TopMenu from "@/components/top-menu";
+import clsx from "clsx";
 
 const font = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en">
-      <body className={font.className}>
+      <body className={clsx(font.className, "overflow-hidden")}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -26,7 +27,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
           disableTransitionOnChange
         >
           <TopMenu />
-          {children}
+          <main className="h-[calc(100vh-66px)] overflow-auto">{children}</main>
         </ThemeProvider>
       </body>
     </html>

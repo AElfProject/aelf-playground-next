@@ -27,6 +27,7 @@
     "@tanstack/react-virtual": "^3.8.3",
     "@uiw/codemirror-theme-github": "^4.23.0",
     "@uiw/react-codemirror": "^4.23.0",
+    "aelf-sdk": "^3.4.14-beta.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "deep-chat-react": "^2.0.0",
@@ -46,12 +47,14 @@
     "tailwindcss-animate": "^1.0.7",
     "use-debounce": "^10.0.1",
     "use-resize-observer": "^9.1.0",
+    "uuid": "^10.0.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/uuid": "^10.0.0",
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
     "postcss": "^8",
