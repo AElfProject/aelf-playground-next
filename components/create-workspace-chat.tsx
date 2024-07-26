@@ -25,6 +25,11 @@ export default function CreateWorkspaceChat() {
                     return;
                 }
 
+                const workspaceName = 'GeneratedWorkspace' + await createGUIDHash();
+
+                await router.push(`/workspace/${workspaceName}`);
+                /*
+
                 const unzipped = getWorkspaceData(file);
 
                 const data = Object.entries(unzipped).map(([key, value]) => ({
@@ -45,7 +50,7 @@ export default function CreateWorkspaceChat() {
                     contents,
                 }))
                 );
-                await router.push(`/workspace/${workspaceName}`);
+                await router.push(`/workspace/${workspaceName}`);*/
             }
         } />
   );

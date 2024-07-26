@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState, useRef } from 'react';
 import { DeepChat } from 'deep-chat-react';
+import { useThread } from '@/providers/threadProvider';
 
 interface DeepChatProps {
   // other props
@@ -11,7 +12,7 @@ interface DeepChatProps {
 export const ChatBot: React.FC<DeepChatProps> = ({ mode, onFile }) => {
   //const router = useRouter();
   const [isBrowser, setIsBrowser] = useState(false);
-  const threadId = useRef<string>();
+  const { threadId, setThreadId } = useThread();
 
   useEffect(() => {
     setIsBrowser(true);
@@ -19,17 +20,16 @@ export const ChatBot: React.FC<DeepChatProps> = ({ mode, onFile }) => {
   }, []);
 
   const sendMessage = async (body: any, signals: any, mode: string) => {
-    if(mode != "create")
+    let url = 'http://localhost:5555/chat';
+    if(mode == "create")
     {
-      mode = "chat";
+    //  url = 'http://localhost:5555/create';
     }
 
-    const url = 'http://localhost:5555/openai-chat';
     const headers = { 'Content-Type': 'application/json' };
     const requestBody = {
       messages: body.messages,
-      mode: mode,
-      ...(threadId.current && { thread_id: threadId.current }),
+      ...(threadId && { thread_id: threadId }),
     };
 
     try {
@@ -41,8 +41,8 @@ export const ChatBot: React.FC<DeepChatProps> = ({ mode, onFile }) => {
       } else {
         const text = await response.text();
         const jsonObject = JSON.parse(text);
-        threadId.current = jsonObject.thread_id;
-        if(jsonObject.file !== undefined)
+        setThreadId(jsonObject.thread_id);
+        //if(jsonObject.file !== undefined)
         {
           if (onFile) {
             onFile(jsonObject.file);

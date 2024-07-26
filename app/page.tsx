@@ -1,4 +1,5 @@
 import CreateWorkspaceChat from "@/components/create-workspace-chat";
+import { ThreadProvider } from "@/providers/threadProvider";
 import {
   GlobeIcon,
   TargetIcon,
