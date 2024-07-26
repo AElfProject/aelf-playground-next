@@ -42,7 +42,7 @@ export const ChatBot: React.FC<DeepChatProps> = ({ mode, onFile }) => {
         const text = await response.text();
         const jsonObject = JSON.parse(text);
         setThreadId(jsonObject.thread_id);
-        //if(jsonObject.file !== undefined)
+        if(jsonObject.file !== undefined)
         {
           if (onFile) {
             onFile(jsonObject.file);
