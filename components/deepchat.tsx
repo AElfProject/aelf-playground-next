@@ -23,7 +23,7 @@ export const ChatBot: React.FC<DeepChatProps> = ({ mode, onFile }) => {
     let url = 'http://localhost:5555/chat';
     if(mode == "create")
     {
-    //  url = 'http://localhost:5555/create';
+      url = 'http://localhost:5555/create';
     }
 
     const headers = { 'Content-Type': 'application/json' };
