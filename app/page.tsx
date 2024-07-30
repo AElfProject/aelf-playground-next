@@ -7,7 +7,7 @@ import {
   PersonIcon,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 
 function HomeCard({
   title,
@@ -34,7 +34,6 @@ function HomeCard({
 }
 
 export default function Home() {
-
   const links = [
     {
       title: "Hello World",
@@ -84,7 +83,9 @@ export default function Home() {
         </Link>
 
         <h3 className="text-xl font-bold">... or generate from a prompt:</h3>
-        <CreateWorkspaceChat />
+        <ThreadProvider>
+          <CreateWorkspaceChat />
+        </ThreadProvider>
       </div>
     </section>
   );

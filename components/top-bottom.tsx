@@ -3,7 +3,6 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { ThreadProvider } from "@/providers/threadProvider";
 import { ReactNode } from "react";
 
 export default function TopBottom({
@@ -14,16 +13,14 @@ export default function TopBottom({
   bottom: ReactNode;
 }) {
   return (
-    <ThreadProvider>
-      <div className="h-[calc(100vh-40px)]">
-        <ResizablePanelGroup direction="vertical">
-          <ResizablePanel defaultSize={70} className="overflow-y-auto">
-            {top}
-          </ResizablePanel>
-          <ResizableHandle />
-          <ResizablePanel defaultSize={30}>{bottom}</ResizablePanel>
-        </ResizablePanelGroup>
-      </div>
-    </ThreadProvider>
+    <div className="h-[calc(100vh-40px)]">
+      <ResizablePanelGroup direction="vertical">
+        <ResizablePanel defaultSize={70} className="overflow-y-auto">
+          {top}
+        </ResizablePanel>
+        <ResizableHandle />
+        <ResizablePanel defaultSize={30}>{bottom}</ResizablePanel>
+      </ResizablePanelGroup>
+    </div>
   );
 }
