@@ -7,7 +7,7 @@ import {
   PersonIcon,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 
 function HomeCard({
   title,
