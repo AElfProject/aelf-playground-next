@@ -15,14 +15,6 @@ export function useWallet() {
     if (existingWallets.length === 0) {
       const newWallet = AElf.wallet.createNewWallet();
       await db.wallet.add({ privateKey: newWallet.privateKey });
-      try {
-        await(
-          await fetch(
-            `https://faucet.aelf.dev/api/claim?walletAddress=${newWallet.address}`,
-            { method: "POST" }
-          )
-        ).json();
-      } catch (err) {}
       return newWallet.privateKey as string;
     } else {
       return existingWallets[0].privateKey;
@@ -78,7 +70,7 @@ class Wallet {
     return await this.getContractAddressByName("AElf.ContractNames.Token");
   }
 
-  private async getTokenContract() {
+  async getTokenContract() {
     const address = await this.getTokenContractAddress();
 
     return this.getContract(address);
