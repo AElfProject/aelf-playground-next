@@ -116,9 +116,9 @@ export function useLogs(id?: string, refreshInterval?: number) {
 export function useTransactions(address: string) {
   return useSWR(address ? `transactions-${address}` : undefined, async () => {
     const res = await fetch(`/api/get-transactions?address=${address}`);
-    const { transactions }: { transactions: Transactions } = await res.json();
+    const { data }: { data:{ transactions: Transactions }} = await res.json();
 
-    return transactions;
+    return data;
   });
 }
 

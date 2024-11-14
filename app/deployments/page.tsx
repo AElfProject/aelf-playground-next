@@ -12,10 +12,12 @@ import {
 import { format } from "date-fns";
 import Link from "next/link";
 import { useLogs, useProposalInfo, useTransactions } from "@/data/client";
+import { Transaction, Transactions } from "@/data/transactions-types";
 
 export default function Page() {
   const wallet = useWallet();
   const { data } = useTransactions(wallet?.wallet.address);
+  const transactions = data?.transactions;
 
   return (
     <div className="container px-4 py-12 md:px-6 lg:py-16">
@@ -29,17 +31,19 @@ export default function Page() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data ? (
-            data
-              .filter((i) => i.method === "DeployUserSmartContract")
+          {transactions ? (
+            transactions
+              .filter(
+                (i: Transaction) => i.method === "DeployUserSmartContract"
+              )
               .map((i) => (
-                <TableRow key={i.id}>
-                  <TableCell>{format(i.time, "PPPppp")}</TableCell>
+                <TableRow key={i.transactionId}>
+                  <TableCell>{format(i.timestamp, "PPPppp")}</TableCell>
                   <TableCell>
-                    <ContractAddress id={i.tx_id} />
+                    <ContractAddress id={i.transactionId} />
                   </TableCell>
                   <TableCell>
-                    <Proposal id={i.tx_id} />
+                    <Proposal id={i.transactionId} />
                   </TableCell>
                 </TableRow>
               ))
@@ -83,7 +87,8 @@ function ViewAddressOnExplorer({ address }: { address: string }) {
   return (
     <Link
       className="hover:underline"
-      href={`https://explorer-test-side02.aelf.io/address/AELF_${address}_tDVW`}
+      // href={`https://explorer-test-side02.aelf.io/address/AELF_${address}_tDVW`}
+      href={`https://testnet.aelfscan.io/tDVW/address/${address}`}
       title="View on Explorer"
       target="_blank"
       rel="noopener noreferrer"
@@ -97,7 +102,7 @@ function ViewProposalOnExplorer({ id }: { id: string }) {
   return (
     <Link
       className="hover:underline"
-      href={`https://explorer-test-side02.aelf.io/proposal/proposalsDetail/${id}`}
+      href={`https://testnet.aelfscan.io/tDVW/tx/${id}`}
       title="View on Explorer"
       target="_blank"
       rel="noopener noreferrer"

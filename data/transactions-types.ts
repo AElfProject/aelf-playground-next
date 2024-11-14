@@ -1,17 +1,22 @@
-export type Transactions = Array<{
-  id: number;
-  tx_id: string;
-  params_to: string;
-  chain_id: string;
-  block_height: number;
-  address_from: string;
-  address_to: string;
-  params: string;
+type TransactionParty = {
+  name: string | null;
+  address: string;
+  addressType: number;
+  isManager: boolean;
+  isProducer: boolean;
+};
+
+export type Transaction = {
+  transactionId: string;
+  blockHeight: number;
   method: string;
-  block_hash: string;
-  tx_fee: string;
-  resources: string;
-  quantity: number;
-  tx_status: string;
-  time: string;
-}>;
+  status: number;
+  from: TransactionParty;
+  to: TransactionParty;
+  timestamp: number;
+  transactionValue: string;
+  transactionFee: string;
+  blockTime: string;
+  chainIds: string[];
+};
+export type Transactions = Array<Transaction>;

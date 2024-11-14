@@ -47,7 +47,7 @@ export function BuildDeployPanel() {
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const wallet = useWallet();
   const faucetUrl = getFaucetUrl();
-  const captchaSitekey = getGoogleCaptchaSitekey();
+  const captchaSitekey = typeof window !== undefined &&  getGoogleCaptchaSitekey();
 
   const { data: isDeployable } = useSWR(
     id ? `deployable-${id}` : undefined,
