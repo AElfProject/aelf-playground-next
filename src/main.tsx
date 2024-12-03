@@ -51,6 +51,7 @@ const router = createBrowserRouter(createRoutesFromElements(<Route path="/" lazy
     </Route>
   ))}
   <Route path="deployments" lazy={() => import('./routes/deployments')} />
+  <Route path="settings" lazy={() => import('./routes/settings')} />
   <Route path="import" lazy={() => import('./routes/import')} />
   <Route path="share/:id" lazy={() => import('./routes/share')} />
 </Route>));

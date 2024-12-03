@@ -19,6 +19,7 @@ export default function TopMenu() {
     { to: "/workspaces", children: "Workspaces" },
     { to: "/tutorials", children: "Tutorials" },
     { to: "/deployments", children: "Deployments" },
+    { to: "/settings", children: "Settings" },
     { to: "https://github.com/AElfProject", children: "GitHub" },
   ];
 

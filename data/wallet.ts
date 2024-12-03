@@ -3,12 +3,10 @@
 import useSWR from "swr";
 import { db } from "./db";
 import AElf from "aelf-sdk";
-
-const aelf = new AElf(
-  new AElf.providers.HttpProvider("https://tdvw-test-node.aelf.io")
-);
+import { useSettings } from "@/components/providers/settings-provider";
 
 export function useWallet() {
+  const { settings } = useSettings();
   const { data: privateKey } = useSWR("wallet", async () => {
     const existingWallets = await db.wallet.toArray();
 
@@ -23,25 +21,34 @@ export function useWallet() {
 
   if (!privateKey) return;
 
-  return new Wallet(privateKey);
+  if (settings.localNode) {
+    return new Wallet(
+      "1111111111111111111111111111111111111111111111111111111111111111",
+      settings.endpoint
+    );
+  }
+
+  return new Wallet(privateKey, settings.endpoint);
 }
 
 class Wallet {
   privateKey;
   wallet;
   cached: Record<string, any> = {};
+  aelf;
 
-  constructor(privateKey: string) {
+  constructor(privateKey: string, endpoint = "https://tdvw-test-node.aelf.io") {
     this.privateKey = privateKey;
     this.wallet = AElf.wallet.getWalletByPrivateKey(privateKey);
+    this.aelf = new AElf(new AElf.providers.HttpProvider(endpoint));
   }
 
   private async getChainStatus() {
-    return await aelf.chain.getChainStatus();
+    return await this.aelf.chain.getChainStatus();
   }
 
   private getContract(address: string) {
-    return aelf.chain.contractAt(address, this.wallet);
+    return this.aelf.chain.contractAt(address, this.wallet);
   }
 
   private async getGenesisContract() {

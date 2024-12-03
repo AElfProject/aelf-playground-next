@@ -5,11 +5,10 @@ import { db, FileContent } from "./db";
 import AElf from "aelf-sdk";
 import { useProposalReleaseInfo } from "./graphql";
 import { strFromU8, unzipSync } from "fflate";
+import { useSettings } from "@/components/providers/settings-provider";
 const { deserializeLog } = AElf.pbUtils;
 
-const aelf = new AElf(
-  new AElf.providers.HttpProvider("https://tdvw-test-node.aelf.io")
-);
+
 
 export function useWorkspaces() {
   return useSWR("workspaces", async () => {
@@ -20,6 +19,11 @@ export function useWorkspaces() {
 }
 
 export function useTransactionResult(id?: string, refreshInterval?: number) {
+  const {settings} = useSettings();
+  const aelf = new AElf(
+    new AElf.providers.HttpProvider(settings.endpoint)
+  );
+
   return useSWR<
     {
       TransactionId: string;
@@ -80,6 +84,11 @@ export function useProposalsInfo(ids?: string[], refreshInterval?: number) {
 }
 
 export function useLogs(id?: string, refreshInterval?: number) {
+  const {settings} = useSettings();
+  const endpoint = settings.endpoint;
+  const aelf = new AElf(
+    new AElf.providers.HttpProvider(endpoint)
+  );
   const { data: txResult } = useTransactionResult(id);
   return useSWR(
     id && !!txResult ? `get-logs-${id}` : undefined,
