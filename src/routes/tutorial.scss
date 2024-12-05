@@ -22,10 +22,23 @@
   pre {
     overflow-x: auto;
     padding: 1rem 0;
+    background-color: #282A36 !important;
   }
-   
+
   pre [data-line] {
     padding: 0 1rem;
+  }
+
+  code {
+    background-color: #f8f8f8;
+    border: 0.1rem solid #ddd;
+    border-radius: 0.4rem;
+    padding-inline: 0.2rem;
+  }
+  pre code {
+    background: #282A36;
+    border: none;
+    border-radius: 0;
   }
   
   h1 {
@@ -53,6 +66,11 @@
     list-style: disc;
     margin-left: 1rem;
     margin-bottom: 1rem;
+  }
+
+  ol{
+    list-style: auto;
+    margin-left: 1rem;
   }
 
   [data-rehype-pretty-code-title] {
@@ -138,3 +156,11 @@
   }
 }
 
+.dark {
+  .mdx-content {
+    code {
+      background-color: #ffffff1a;
+      border: 0.1rem solid #ffffff1a;
+    }
+  }
+}

@@ -1,0 +1,315 @@
+import GenerateTemplate from '@/components/tutorial/generate-template';
+
+# Tic Tac Toe
+
+**Description**: The Tic-Tac-Toe dApp is a decentralized gamify application that allows users to play the classic game of Tic-Tac-Toe on the aelf blockchain. It offers a simple and interactive interface where two players can compete against each other, with game data securely stored and verified on the aelf blockchain.
+
+**Purpose**: The purpose of the Tic-Tac-Toe gamify dApp is to demonstrate how traditional games can be implemented on the aelf blockchain, ensuring transparency and immutability of game outcomes. It serves as an educational tool for learning smart contract development and the basics of decentralized application functionality.
+
+**Difficulty Level**: Moderate
+
+## Step 1 - Develop Smart Contract
+
+### Adding Your Smart Contract Code
+
+First, generate the template: <GenerateTemplate name="TicTacToe" renameHelloWorldProto="tic_tac_toe" />
+
+#### Defining Methods and Messages
+
+The implementation of `tic_tac_toe.proto` file inside folder `src/Protobuf/contract/` is as follows:
+
+```csharp title="tic_tac_toe.proto"
+syntax = "proto3";
+
+import "aelf/options.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "Protobuf/reference/acs12.proto";
+// The namespace of this class
+option csharp_namespace = "AElf.Contracts.TicTacToe";
+
+service TicTacToe {
+  // The name of the state class the smart contract is going to use to access blockchain state
+  option (aelf.csharp_state) = "AElf.Contracts.TicTacToe.TicTacToeState";
+  option (aelf.base) = "Protobuf/reference/acs12.proto";
+
+  rpc Initialize (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+  
+  rpc StartGame (google.protobuf.Empty) returns (google.protobuf.StringValue) {}
+  
+  rpc MakeMove (MoveInput) returns (google.protobuf.StringValue) {}
+  
+  rpc GetBoard (google.protobuf.Empty) returns (Board) {
+    option (aelf.is_view) = true;
+  }
+  
+  rpc GetGameStatus (google.protobuf.Empty) returns (GameStatus) {
+    option (aelf.is_view) = true;
+  }
+  rpc GetInitialStatus(google.protobuf.Empty) returns(google.protobuf.BoolValue){
+    option (aelf.is_view) = true;
+  }
+}
+
+// Input for making a move
+message MoveInput {
+  int32 x = 1;
+  int32 y = 2;
+}
+
+// A message to represent the game board
+message Board {
+  repeated string rows = 1;
+}
+
+// A message to represent the game status
+message GameStatus {
+  string status = 1;
+  string winner = 2;
+}
+```
+
+- `rpc` methods define the callable functions within the contract, allowing external systems to interact with the contract's logic.
+- `message` represent the structured data exchanged between the contract and external systems.
+
+#### Define Contract States
+
+The implementation of the Tic Tac Toe app state inside file `src/TicTacToeState.cs` is as follows:
+
+```csharp title="src/TicTacToeState.cs"
+using AElf.Sdk.CSharp.State;
+using AElf.Types;
+
+namespace AElf.Contracts.TicTacToe
+{
+    // The state class is access the blockchain state
+    public partial class TicTacToeState : ContractState 
+    {
+        // A state to check if contract is initialized
+        public BoolState Initialized { get; set; }
+        public SingletonState<Address> Owner { get; set; }
+        public StringState Board { get; set; } // Board state as a concatenated string
+        public StringState CurrentPlayer { get; set; } // X or O
+        public StringState GameStatus { get; set; } // ongoing, finished, draw
+        public StringState Winner { get; set; } // X or O
+    }
+}
+```
+
+- The `State.cs` file in an aelf blockchain smart contract holds the variables that store the contract's data, making sure this data is saved and accessible whenever the contract needs it.
+
+#### Implement Tic Tac Toe Smart Contract 
+
+The implementation of the Tic Tac Toe App smart contract inside file `src/TicTacToe.cs` is as follows:
+
+```csharp title="src/TicTacToe.cs"
+using Google.Protobuf.WellKnownTypes;
+using System.Collections.Generic;
+
+namespace AElf.Contracts.TicTacToe
+{
+    // Contract class must inherit the base class generated from the proto file
+    public class TicTacToe : TicTacToeContainer.TicTacToeBase
+    {
+     private const int BoardSize = 3;
+
+        public override Empty Initialize(Empty input)
+        {
+            if (State.Initialized.Value)
+            {
+                return new Empty();
+            }
+            State.Initialized.Value = true;
+            State.Owner.Value = Context.Sender;
+            ResetBoard();
+            return new Empty();
+        }
+
+        public override StringValue StartGame(Empty input)
+        {
+            if (!State.Initialized.Value)
+            {
+                return new StringValue { Value = "Contract not initialized." };
+            }
+
+            ResetBoard();
+            State.CurrentPlayer.Value = "X";
+            State.GameStatus.Value = "ongoing";
+            State.Winner.Value = "";
+            return new StringValue { Value = "Game started. Player X's turn." };
+        }
+
+        public override StringValue MakeMove(MoveInput input)
+        {
+            if (State.GameStatus.Value != "ongoing")
+            {
+                return new StringValue { Value = "Game is not ongoing." };
+            }
+
+            var board = GetBoardArray();
+            if (board[input.X, input.Y] != "")
+            {
+                return new StringValue { Value = "Invalid move. Cell is already occupied." };
+            }
+
+            board[input.X, input.Y] = State.CurrentPlayer.Value;
+            SaveBoard(board);
+
+            if (CheckWinner())
+            {
+                State.GameStatus.Value = "finished";
+                State.Winner.Value = State.CurrentPlayer.Value;
+                return new StringValue { Value = $"Player {State.CurrentPlayer.Value} wins!" };
+            }
+
+            if (IsBoardFull(board))
+            {
+                State.GameStatus.Value = "draw";
+                return new StringValue { Value = "It's a draw!" };
+            }
+
+            State.CurrentPlayer.Value = State.CurrentPlayer.Value == "X" ? "O" : "X";
+            return new StringValue { Value = $"Player {State.CurrentPlayer.Value}'s turn." };
+        }
+
+        public override Board GetBoard(Empty input)
+        {
+              var board = GetBoardArray();
+              var boardMessage = new Board();
+          
+              for (var i = 0; i < 3; i++) // Adjusted to 3 for a 3x3 Tic-Tac-Toe board
+              {
+                  var row = new List<string>();
+                  for (var j = 0; j < 3; j++)
+                  {
+                      row.Add(board[i, j]);
+                  }
+                  boardMessage.Rows.Add(string.Join(",", row));
+              }
+          
+              return boardMessage;
+        }
+
+        public override GameStatus GetGameStatus(Empty input)
+        {
+            return new GameStatus
+            {
+                Status = State.GameStatus.Value,
+                Winner = State.Winner.Value
+            };
+        }
+
+        public override BoolValue GetInitialStatus(Empty input){
+              return new BoolValue { Value = State.Initialized.Value };
+          }
+
+        private void ResetBoard()
+        {
+            var emptyBoard = new string[BoardSize, BoardSize];
+            for (var i = 0; i < BoardSize; i++)
+            {
+                for (var j = 0; j < BoardSize; j++)
+                {
+                    emptyBoard[i, j] = "";
+                }
+            }
+            SaveBoard(emptyBoard);
+        }
+
+        private string[,] GetBoardArray()
+        {
+            var boardString = State.Board.Value;
+            var rows = boardString.Split(';');
+            var board = new string[BoardSize, BoardSize];
+            for (var i = 0; i < BoardSize; i++)
+            {
+                var cells = rows[i].Split(',');
+                for (var j = 0; j < BoardSize; j++)
+                {
+                    board[i, j] = cells[j];
+                }
+            }
+            return board;
+        }
+
+        private void SaveBoard(string[,] board)
+        {
+            var rows = new string[BoardSize];
+            for (var i = 0; i < BoardSize; i++)
+            {
+                rows[i] = string.Join(",", board[i, 0], board[i, 1], board[i, 2]);
+            }
+            State.Board.Value = string.Join(";", rows);
+        }
+
+        private bool CheckWinner()
+        {
+            var board = GetBoardArray();
+            var player = State.CurrentPlayer.Value;
+
+            for (var i = 0; i < BoardSize; i++)
+            {
+                if (board[i, 0] == player && board[i, 1] == player && board[i, 2] == player) return true;
+                if (board[0, i] == player && board[1, i] == player && board[2, i] == player) return true;
+            }
+
+            if (board[0, 0] == player && board[1, 1] == player && board[2, 2] == player) return true;
+            if (board[0, 2] == player && board[1, 1] == player && board[2, 0] == player) return true;
+
+            return false;
+        }
+
+        private bool IsBoardFull(string[,] board)
+        {
+            for (var i = 0; i < BoardSize; i++)
+            {
+                for (var j = 0; j < BoardSize; j++)
+                {
+                    if (board[i, j] == "") return false;
+                }
+            }
+            return true;
+        }
+    }
+}
+```
+
+## Step 2 - Building Smart Contract
+
+Build the new code by clicking the Build button.
+
+## Step 3 - Deploy Smart Contract
+
+Deploy the new code by clicking the Deploy button.
+
+## 🎯 Conclusion
+
+🎉 Congratulations on successfully completing the **Tic Tac Toe dApp** tutorial! 🎉 You've achieved significant milestones, from setting up your development environment to deploying and interacting with your Tic-Tac-Toe smart contract on the aelf blockchain. 🌟
+
+**📚 What You've Learned**
+
+Throughout this tutorial, you've mastered:
+
+  - **🛠️ Setting Up Your Development Environment:** You equipped your workspace by installing and configuring all the necessary tools to get your smart contract project off the ground.
+
+  - **💻 Developing Your Smart Contract:** You built the core logic of your Tic Tac Toe game, writing and compiling the smart contract that manages game states, moves, and outcomes.
+
+**🔍 Final Output**
+
+By now, you should have:
+
+  - 📜 A deployed Tic-Tac-Toe smart contract that governs the game's rules and manages players' moves on the blockchain.
+
+**➡️ What's Next?**
+
+With the foundation laid, consider advancing your Tic-Tac-Toe dApp with more sophisticated features:
+
+  - **📈 Enhancing Game Logic:** Add more features like AI opponents, multiplayer functionality, or scoring systems to make the game more engaging.
+
+  - **🔒 Improving Security:** Secure your game by applying best practices in smart contract security to protect users' data and gameplay integrity.
+
+  - **🌍 Exploring Cross-Chain Capabilities:** Expand your dApp’s reach by exploring aelf’s cross-chain interoperability, enabling interactions with other blockchains.
+
+Blockchain technology and decentralized applications offer limitless possibilities. With your Tic-Tac-Toe dApp, you're now poised to continue innovating and exploring new horizons with aelf. 🚀
+
+Happy coding and expanding your **Tic-Tac-Toe dApp!** 😊

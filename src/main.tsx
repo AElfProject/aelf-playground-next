@@ -13,6 +13,11 @@ import HelloWorldSolidity from './tutorials/hello-world-solidity.mdx';
 import LotteryGame from './tutorials/lottery-game.mdx';
 import Todo from './tutorials/todo.mdx';
 import VoteContract from './tutorials/vote-contract.mdx';
+import TicTacToeContract from './tutorials/tic-tac-toe.mdx';
+import ExpenseTracker from './tutorials/expense-tracker.mdx';
+import SinglePoolStaking from './tutorials/single-pool-staking.mdx';
+import RoleContract from './tutorials/role.mdx';
+import AllowanceContract from './tutorials/allowance.mdx';
 import {Component as Tutorial} from './routes/tutorial';
 
 const tutorials = [
@@ -35,6 +40,26 @@ const tutorials = [
   {
     path: 'vote-contract',
     component: VoteContract,
+  },
+  {
+    path: 'tic-tac-toe',
+    component: TicTacToeContract,
+  },
+  {
+    path: 'expense-tracker',
+    component: ExpenseTracker,
+  },
+  {
+    path: 'single-pool-staking',
+    component: SinglePoolStaking,
+  },
+  {
+    path: 'role',
+    component: RoleContract,
+  },
+  {
+    path: 'allowance',
+    component: AllowanceContract,
   },
 ]
 
