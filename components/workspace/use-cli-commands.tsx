@@ -22,6 +22,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { FormatBuildErrors } from "./format-build-errors";
 import { playgroundService } from "@/data/playground-service";
 import { solangBuildService } from "@/data/solang-build-service";
+import { useSettings } from "../providers/settings-provider";
 
 const PROPOSAL_TIMEOUT = 15 * 60 * 1000; // proposal expires after 15 minutes
 
@@ -30,6 +31,7 @@ export function useCliCommands() {
   const pathname = usePathname();
   const id = useWorkspaceId();
   const [, setSearchParams] = useSearchParams();
+  const {settings} = useSettings();
 
   const wallet = useWallet();
   const commands = {
@@ -232,7 +234,8 @@ export function useCliCommands() {
       }
       const { TransactionId } = await wallet.deploy(
         dll,
-        template === "solidity" ? 1 : 0
+        template === "solidity" ? 1 : 0,
+        settings.localNode
       );
 
       const url = `https://testnet.aelfscan.io/tDVW/tx/${TransactionId}`;

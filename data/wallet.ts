@@ -56,13 +56,64 @@ class Wallet {
     return await this.getContract(chainStatus.GenesisContractAddress);
   }
 
-  async deploy(code: string, category = 0): Promise<{ TransactionId: string }> {
+  async deploy(code: string, category = 0, isLocalNode = false): Promise<{ TransactionId: string }> {
+    // handle local node
+    if (isLocalNode) {
+      console.log("Deploying locally...");
+      return await this.deployLocal(code, category);
+    }
+
     const genesisContract = await this.getGenesisContract();
 
     return await genesisContract.DeployUserSmartContract({
       category: String(category),
       code,
     });
+  }
+
+  async deployLocal(code: string, category = 0): Promise<{ TransactionId: string }> {
+    // get default organization address
+    const parliamentContractAddress = await this.getContractAddressByName("AElf.ContractNames.Parliament");
+
+    const parliamentContract = await this.getContract(parliamentContractAddress);
+    const defaultOrganisationAddress = await parliamentContract.GetDefaultOrganizationAddress.call();
+
+    // create proposal
+    console.log("Creating proposal...");
+    const chainStatus = await this.getChainStatus();
+    try {
+      const {TransactionId} = await parliamentContract.CreateProposal({
+        contractMethodName: "DeployUserSmartContract",
+        organizationAddress: defaultOrganisationAddress,
+        toAddress: chainStatus.GenesisContractAddress,
+        params: {
+          Category: category,
+          Code: code,
+        },
+      });
+      console.log("Proposal created:", TransactionId);
+
+      // get transaction result
+      let txResult;
+      while (!txResult) {
+        const {TransactionResult} = await this.aelf.chain.getTxResult(TransactionId);
+        if (TransactionResult) {
+          txResult = TransactionResult;
+        }
+        // wait 1s
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+      console.log("Transaction result:", txResult);
+
+
+    } catch (e) {
+      console.error("Error creating proposal:", e);
+      throw e;
+    }
+
+    throw new Error("WIP");
+
+    return {TransactionId: "local"};
   }
 
   private async getContractAddressByName(name: string) {
