@@ -22,6 +22,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { FormatBuildErrors } from "./format-build-errors";
 import { playgroundService } from "@/data/playground-service";
 import { solangBuildService } from "@/data/solang-build-service";
+import { useToast } from "../ui/use-toast";
 
 const PROPOSAL_TIMEOUT = 15 * 60 * 1000; // proposal expires after 15 minutes
 
@@ -30,6 +31,7 @@ export function useCliCommands() {
   const pathname = usePathname();
   const id = useWorkspaceId();
   const [, setSearchParams] = useSearchParams();
+  const { toast } = useToast();
 
   const wallet = useWallet();
   const commands = {
@@ -110,9 +112,26 @@ export function useCliCommands() {
           </>
         );
       } catch (err) {
-        if (err instanceof Error)
-          terminalContext.setBufferedContent(<p>Error: {err.message}</p>);
-        return;
+        console.log("err",err)
+        const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
+        terminalContext.setBufferedContent(
+          <p>
+            <strong>Error:</strong> {errorMessage}. Please try again or contact
+            support if this continues.
+          </p>
+        );
+        if (errorMessage.includes("network")) {
+          toast({
+            title: "Network Error",
+            description: "Please check your internet connection and try again.",
+          });
+        } else {
+          toast({
+            title: "Audit Failed",
+            description:
+              errorMessage || "Something went wrong. Please try again.",
+          });
+        }
       }
     },
     build: async () => {
@@ -160,10 +179,18 @@ export function useCliCommands() {
             </>
           );
           return;
+        } else {
+          throw new Error("Build failed: DLL generation returned undefined.");
         }
       } catch (err) {
-        if (err instanceof Error)
-          terminalContext.setBufferedContent(<FormatBuildErrors inputString={err.message} />);
+        const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
+        terminalContext.setBufferedContent(
+          <FormatBuildErrors inputString={errorMessage} />
+        );
+        toast({
+          title: "Build Failed",
+          description: errorMessage,
+        });
         return;
       }
     },
@@ -199,12 +226,23 @@ export function useCliCommands() {
           <FormatErrors inputString={message} />
         );
       } catch (err) {
-        if (err instanceof Error)
-          terminalContext.setBufferedContent(<>{err.message}</>);
+        const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
+        // Display error in the terminal
+        terminalContext.setBufferedContent(
+          <>
+            <p><strong>Error:</strong> {errorMessage}</p>
+          </>
+        );
+
+        toast({
+          title: "Test Failed",
+          description: errorMessage,
+        });
         return;
       }
     },
     deploy: async () => {
+      try {
       if (typeof id !== "string") {
         terminalContext.setBufferedContent(
           <>
@@ -217,7 +255,8 @@ export function useCliCommands() {
       if (!dll) {
         terminalContext.setBufferedContent(
           <>
-            <p>Contract not built.</p>
+            <strong>Warning: </strong>
+            <span>No contract found to deploy. Please ensure the contract is built successfully before attempting deployment.</span>
           </>
         );
         return;
@@ -243,6 +282,18 @@ export function useCliCommands() {
           <Deployment id={TransactionId} />
         </>
       );
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred during deployment.";
+      terminalContext.setBufferedContent(
+        <>
+          <p>Error: {errorMessage}</p>
+        </>
+      );
+      toast({
+        title: "Deployment Failed",
+        description: errorMessage,
+      });
+    }
     },
     check: async (id: string) => {
       if (!id) return `Please enter the Transaction ID.`;
@@ -280,41 +331,76 @@ export function useCliCommands() {
       saveAs(file);
     },
     share: async () => {
-      if (typeof id !== "string") throw new Error("id is not string");
-      const start = `${pathname}/`;
-      terminalContext.setBufferedContent(
-        <>
-          <p>Loading files...</p>
-        </>
-      );
-      const files = (
-        await db.files.filter((file) => file.path.startsWith(start)).toArray()
-      ).map((file) => ({
-        path: decodeURIComponent(file.path.replace(start, "")),
-        contents: file.contents,
-      }));
-
-      terminalContext.setBufferedContent(
-        <>
-          <p>Loaded files: {files.map((i) => i.path).join(", ")}</p>
-          <p>
-            <Loader2 className="h-4 w-4 animate-spin inline" /> Generating share
-            link...
-          </p>
-        </>
-      );
-
       try {
-        const { id } = await playgroundService.createShare(files);
+        // Validate `id` input
+        if (typeof id !== "string") {
+          terminalContext.setBufferedContent(
+            <>
+              <p>
+                Error: Invalid workspace identifier. Please provide a valid
+                workspace ID.
+              </p>
+            </>
+          );
+          return;
+        }
 
-        if (!id)
-          throw new Error("error");
+        const start = `${pathname}/`;
+        terminalContext.setBufferedContent(
+          <>
+            <p>Loading files...</p>
+          </>
+        );
+        const files = (
+          await db.files.filter((file) => file.path.startsWith(start)).toArray()
+        ).map((file) => ({
+          path: decodeURIComponent(file.path.replace(start, "")),
+          contents: file.contents,
+        }));
 
-        terminalContext.setBufferedContent(<ShareLink id={id} />);
+        terminalContext.setBufferedContent(
+          <>
+            <p>Loaded files: {files.map((i) => i.path).join(", ")}</p>
+            <p>
+              <Loader2 className="h-4 w-4 animate-spin inline" /> Generating
+              share link...
+            </p>
+          </>
+        );
+
+        const { id: shareId } = await playgroundService.createShare(files);
+
+        if (!shareId) {
+          throw new Error("Unable to generate share link. Please try again.");
+        }
+
+        terminalContext.setBufferedContent(
+          <>
+            <p>Share link generated successfully!</p>
+            <ShareLink id={shareId} />
+          </>
+        );
       } catch (err) {
-        if (err instanceof Error)
-          terminalContext.setBufferedContent(<p>{err.message?.trim() || "There was an error generating the share link. Please try again later."}</p>);
-        return;
+        const errorMessage =
+          err instanceof Error && err.message
+            ? err.message.trim()
+            : "An unexpected error occurred while generating the share link. Please try again.";
+
+        // Log error for debugging
+        console.error("Share Error:", err);
+
+        // Notify user of error
+        terminalContext.setBufferedContent(
+          <>
+            <p>Error: {errorMessage}</p>
+          </>
+        );
+
+        // Optional error toast
+        toast({
+          title: "Share Link Error",
+          description: errorMessage,
+        });
       }
     },
   };
