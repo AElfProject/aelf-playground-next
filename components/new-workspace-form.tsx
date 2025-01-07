@@ -45,7 +45,7 @@ const FormSchema = z.object({
 
 function getLabel(value: string) {
   switch (value) {
-    case "aelf":
+    case "aelf-hello-world":
       return "Hello World";
 
     case "aelf-lottery":
@@ -57,6 +57,18 @@ function getLabel(value: string) {
     case "aelf-simple-dao":
       return "Simple DAO";
 
+    case "aelf-todo":
+      return "Todo";
+
+    case "aelf-tictactoe":
+      return "Tic Tac Teo";
+
+    case "aelf-expense":
+      return "Expense Tracker";
+
+    case "aelf-staking":
+      return "Single Pool Staking";
+
     default:
       return value;
   }
@@ -64,7 +76,16 @@ function getLabel(value: string) {
 
 export function WorkspaceForm() {
   const [searchParams] = useSearchParams();
-  const templateOptions = ["aelf", "aelf-lottery", "aelf-nft-sale", "aelf-simple-dao"];
+  const templateOptions = [
+    "aelf-hello-world",
+    "aelf-lottery",
+    "aelf-nft-sale",
+    "aelf-simple-dao",
+    "aelf-todo",
+    "aelf-tictactoe",
+    "aelf-expense",
+    "aelf-staking",
+  ];
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {

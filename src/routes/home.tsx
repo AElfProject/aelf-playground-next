@@ -3,6 +3,10 @@ import {
     TargetIcon,
     TokensIcon,
     PersonIcon,
+    ListBulletIcon,
+    MixIcon,
+    IdCardIcon,
+    StackIcon,
   } from "@radix-ui/react-icons";
   import { Link } from "react-router-dom";
   import { ReactNode } from "react";
@@ -41,7 +45,7 @@ import {
         title: "Hello World",
         subtitle: "The basics.",
         icon: <GlobeIcon className="h-6 w-6" />,
-        template: "aelf",
+        template: "aelf-hello-world",
       },
       {
         title: "Lottery",
@@ -60,6 +64,30 @@ import {
         subtitle: "Decentralised Autonomous Org.",
         icon: <PersonIcon className="h-6 w-6" />,
         template: "aelf-simple-dao",
+      },
+      {
+        title: "ToDo",
+        subtitle: "A basic ToDo smart contract",
+        icon: <ListBulletIcon className="h-6 w-6" />,
+        template: "aelf-todo",
+      },
+      {
+        title: "Tic Tac Toe",
+        subtitle: "Decentralised gamify contract",
+        icon: <MixIcon className="h-6 w-6" />,
+        template: "aelf-tictactoe",
+      },
+      {
+        title: "Expense Tracker",
+        subtitle: "Expense organizer",
+        icon: <IdCardIcon className="h-6 w-6" />,
+        template: "aelf-expense",
+      },
+      {
+        title: "Single Pool Staking",
+        subtitle: "Token staking",
+        icon: <StackIcon className="h-6 w-6" />,
+        template: "aelf-staking",
       },
     ];
   
