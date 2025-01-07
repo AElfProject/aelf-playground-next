@@ -61,7 +61,7 @@ function getLabel(value: string) {
       return "Todo";
 
     case "aelf-tictactoe":
-      return "Tic Tac Teo";
+      return "Tic Tac Toe";
 
     case "aelf-expense":
       return "Expense Tracker";
